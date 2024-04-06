@@ -2,7 +2,17 @@ package com.mydeveloperplanet.mycreatetweetplanet;
 
 import java.util.Scanner;
 
-public class OAuth2Token {
+import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.github.scribejava.core.pkce.PKCE;
+import com.github.scribejava.core.pkce.PKCECodeChallengeMethod;
+import com.twitter.clientlib.ApiException;
+import com.twitter.clientlib.TwitterCredentialsOAuth2;
+import com.twitter.clientlib.api.TwitterApi;
+import com.twitter.clientlib.auth.TwitterOAuth20Service;
+import com.twitter.clientlib.model.TweetCreateRequest;
+import com.twitter.clientlib.model.TweetCreateResponse;
+
+public class OAuth20GetAccessToken {
 
     public static void main(String[] args) {
         TwitterCredentialsOAuth2 credentials = new TwitterCredentialsOAuth2(System.getenv("TWITTER_OAUTH2_CLIENT_ID"),
@@ -10,22 +20,22 @@ public class OAuth2Token {
                 System.getenv("TWITTER_OAUTH2_ACCESS_TOKEN"),
                 System.getenv("TWITTER_OAUTH2_REFRESH_TOKEN"));
 
-//        OAuth2AccessToken accessToken = getAccessToken(credentials);
-//        if (accessToken == null) {
-//            return;
-//        }
-//
-//        // Setting the access & refresh tokens into TwitterCredentialsOAuth2
-//        credentials.setTwitterOauth2AccessToken(accessToken.getAccessToken());
-//        credentials.setTwitterOauth2RefreshToken(accessToken.getRefreshToken());
+        OAuth2AccessToken accessToken = getAccessToken(credentials);
+        if (accessToken == null) {
+            return;
+        }
+
+        // Setting the access & refresh tokens into TwitterCredentialsOAuth2
+        credentials.setTwitterOauth2AccessToken(accessToken.getAccessToken());
+        credentials.setTwitterOauth2RefreshToken(accessToken.getRefreshToken());
         callApi(credentials);
     }
 
-    public static OAuth2AccessToken getAccessToken(TwitterCredentialsOAuth2 credentials) {
+    private static OAuth2AccessToken getAccessToken(TwitterCredentialsOAuth2 credentials) {
         TwitterOAuth20Service service = new TwitterOAuth20Service(
                 credentials.getTwitterOauth2ClientId(),
                 credentials.getTwitterOAuth2ClientSecret(),
-                "https://www.mydeveloperplanet.com",
+                "<Fill in your Callback URI as configured in your X App in the developer portal>",
                 "offline.access tweet.read users.read tweet.write");
 
         OAuth2AccessToken accessToken = null;
@@ -55,10 +65,10 @@ public class OAuth2Token {
         return accessToken;
     }
 
-    public static void callApi(TwitterCredentialsOAuth2 credentials) {
+    private static void callApi(TwitterCredentialsOAuth2 credentials) {
         TwitterApi apiInstance = new TwitterApi(credentials);
         TweetCreateRequest tweetCreateRequest = new TweetCreateRequest(); // TweetCreateRequest |
-        tweetCreateRequest.setText("Test");
+        tweetCreateRequest.setText("Hello World!");
         try {
             TweetCreateResponse result = apiInstance.tweets().createTweet(tweetCreateRequest)
                     .execute();
@@ -70,6 +80,5 @@ public class OAuth2Token {
             System.err.println("Response headers: " + e.getResponseHeaders());
             e.printStackTrace();
         }
-
     }
 }
